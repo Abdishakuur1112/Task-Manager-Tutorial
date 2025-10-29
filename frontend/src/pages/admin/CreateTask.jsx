@@ -25,6 +25,7 @@ const CreateTask = () => {
     description: "",
     priority: "Low",
     dueDate: null,
+    endDate: null,
     assignedTo: [],
     todoChecklist: [],
     attachments: [],
@@ -51,6 +52,7 @@ const CreateTask = () => {
       description: "",
       priority: "Low",
       dueDate: null,
+      endDate: null,
       assignedTo: [],
       todoChecklist: [],
       attachments: [],
@@ -68,6 +70,7 @@ const CreateTask = () => {
       const response = await axiosInstance.post("/tasks/create", {
         ...taskData,
         dueDate: new Date(taskData.dueDate).toISOString(),
+        ...(taskData.endDate && { endDate: new Date(taskData.endDate).toISOString() }),
         todoChecklist: todolist,
       })
 
@@ -98,6 +101,7 @@ const CreateTask = () => {
       const response = await axiosInstance.put(`/tasks/${taskId}`, {
         ...taskData,
         dueDate: new Date(taskData.dueDate).toISOString(),
+        ...(taskData.endDate && { endDate: new Date(taskData.endDate).toISOString() }),
         todoChecklist: todolist,
       })
 
@@ -163,6 +167,9 @@ const CreateTask = () => {
           priority: taskInfo?.priority,
           dueDate: taskInfo?.dueDate
             ? moment(taskInfo?.dueDate).format("YYYY-MM-DD")
+            : null,
+          endDate: taskInfo?.endDate
+            ? moment(taskInfo?.endDate).format("YYYY-MM-DD")
             : null,
           assignedTo: taskInfo?.assignedTo?.map((item) => item?._id || []),
           todoChecklist:
@@ -285,6 +292,24 @@ const CreateTask = () => {
                       onChange={(data) => handleValueChange("dueDate", data)}
                       minDate={new Date()}
                       placeholderText="Select due date"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    End Date
+                  </label>
+
+                  <div className="relative">
+                    <DatePicker
+                      selected={taskData.endDate}
+                      onChange={(data) => handleValueChange("endDate", data)}
+                      minDate={taskData.dueDate || new Date()}
+                      placeholderText="Select end date"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>

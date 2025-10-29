@@ -40,6 +40,11 @@ const taskSchema = new mongoose.Schema(
       required: true,
     },
 
+    // Optional end date for the task lifecycle (can be used for reporting)
+    endDate: {
+      type: Date,
+    },
+
     assignedTo: [
       {
         type: mongoose.Schema.Types.ObjectId,
