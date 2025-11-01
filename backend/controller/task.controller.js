@@ -9,7 +9,6 @@ export const createTask = async (req, res, next) => {
       description,
       priority,
       dueDate,
-      endDate,
       assignedTo,
       attachments,
       todoChecklist,
@@ -24,7 +23,6 @@ export const createTask = async (req, res, next) => {
       description,
       priority,
       dueDate,
-      endDate,
       assignedTo,
       attachments,
       todoChecklist,
@@ -140,7 +138,6 @@ export const updateTask = async (req, res, next) => {
     task.description = req.body.description || task.description
     task.priority = req.body.priority || task.priority
     task.dueDate = req.body.dueDate || task.dueDate
-    task.endDate = req.body.endDate || task.endDate
     task.todoChecklist = req.body.todoChecklist || task.todoChecklist
     task.attachments = req.body.attachments || task.attachments
 
@@ -196,19 +193,6 @@ export const updateTaskStatus = async (req, res, next) => {
       return next(errorHandler(403, "Unauthorized"))
     }
 
-    // Block non-admin users from updating if deadline passed and task not completed
-    const nowForStatus = new Date()
-    if (
-      req.user.role !== "admin" &&
-      task.status !== "Completed" &&
-      task.dueDate &&
-      nowForStatus > new Date(task.dueDate)
-    ) {
-      return next(
-        errorHandler(403, "Task deadline has passed. Access revoked for updates.")
-      )
-    }
-
     task.status = req.body.status || task.status
 
     if (task.status === "Completed") {
@@ -235,19 +219,6 @@ export const updateTaskChecklist = async (req, res, next) => {
 
     if (!task.assignedTo.includes(req.user.id) && req.user.role !== "admin") {
       return next(errorHandler(403, "Not authorized to update checklist"))
-    }
-
-    // Block non-admin users from updating if deadline passed and task not completed
-    const nowForTodo = new Date()
-    if (
-      req.user.role !== "admin" &&
-      task.status !== "Completed" &&
-      task.dueDate &&
-      nowForTodo > new Date(task.dueDate)
-    ) {
-      return next(
-        errorHandler(403, "Task deadline has passed. Access revoked for updates.")
-      )
     }
 
     task.todoChecklist = todoChecklist
